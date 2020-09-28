@@ -1,5 +1,7 @@
 import logging
 
+from abc import abstractmethod
+
 from typing import List, Optional
 from parsers.types import Article
 from xml.etree import ElementTree
@@ -8,6 +10,7 @@ from xml.etree import ElementTree
 class BaseRSSParser:
 
     logger = logging.getLogger(__name__)
+
     DEFAULT_ARTICLES_ATTR_MAPPING = {
         "id": "guid",
         "link": "link",
@@ -17,15 +20,22 @@ class BaseRSSParser:
         "image_description": "description"
     }
 
+    @property
+    @abstractmethod
+    def source(self):
+        pass
+
     def __init__(self, raw_response: str,
                  rss_version: str = "2.0",
                  articles_attr_mapping: Optional[dict] = None):
         self.rss_version = rss_version
-        self.rss_tree = ElementTree.fromstring(self.pre_parse(raw_response))
+        self.rss_tree = self._create_root_xml(raw_response)
         self.attr_mapping = articles_attr_mapping
 
-    def pre_parse(self, raw_response: str):
-        return raw_response
+    @staticmethod
+    def _create_root_xml(raw_response: str) -> ElementTree:
+        et = ElementTree.fromstring(raw_response)
+        return et
 
     @property
     def attr_mapping(self):
@@ -38,7 +48,7 @@ class BaseRSSParser:
         self._attr_mapping = self.DEFAULT_ARTICLES_ATTR_MAPPING
 
     def get_article_iterator(self):
-        return self.rss_tree.find("channel").findall("item")
+        return self.rss_tree.findall(".//item")
 
     def parse(self) -> List[Article]:
         articles: List[Article] = []
@@ -52,7 +62,8 @@ class BaseRSSParser:
             image_link = self._parse_image_link(child)
             image_description = self._parse_image_description(child)
             article = Article(id_, link, title, description,
-                              image_link, image_description)
+                              image_link, image_description,
+                              self.source)
             articles.append(article)
         return articles
 

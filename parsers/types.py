@@ -9,3 +9,7 @@ class Article:
     article_description: str
     image_link: str
     image_description: str
+    source: str
+
+    def __repr__(self):
+        return f'Article(id={self.article_id}, source={self.source})'
