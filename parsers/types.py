@@ -1,3 +1,5 @@
+import pickle
+
 from dataclasses import dataclass
 
 
@@ -13,3 +15,6 @@ class Article:
 
     def __repr__(self):
         return f'Article(id={self.article_id}, source={self.source})'
+
+    def to_bytes(self):
+        return pickle.dumps(self)

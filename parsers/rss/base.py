@@ -1,10 +1,17 @@
 import logging
 
+from dataclasses import dataclass
 from abc import abstractmethod
 
-from typing import List, Optional
+from typing import List, Optional, Type
 from parsers.types import Article
 from xml.etree import ElementTree
+
+
+@dataclass
+class RSSFeed:
+    source_url: str
+    parser: Type["BaseRSSParser"]
 
 
 class BaseRSSParser:

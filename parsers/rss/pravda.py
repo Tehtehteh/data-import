@@ -17,8 +17,8 @@ class PravdaRssParser(BaseRSSParser):
                 el.tag = postfix  # strip all namespaces
         return it.root
 
-    def _parse_image_link(self, element: ElementTree.Element) -> str:
-        return element.find("enclosure").get("url")
+    # def _parse_image_link(self, element: ElementTree.Element) -> str:
+    #     return element.find("enclosure").get("url")
 
     def _parse_title(self, element: ElementTree.Element) -> str:
         # todo: don't call normalize text multiple times

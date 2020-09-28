@@ -1,37 +1,46 @@
-from parsers.rss import (
-    PravdaRssParser,
-    UnianRssParser
-)
+import signal
+import asyncio
+import logging
+
+from config import Config
+from app import Application
+from logs import setup_logging
+from parsers import UnianRssParser, PravdaRssParser, RSSFeed
 
 
-def parse_pravda():
-    pravda_stub = "stub_pravda_rss.xml"
-    with open(pravda_stub) as fh:
-        stub = fh.read()
-        parser = PravdaRssParser(stub)
-        articles = parser.parse()
-        return articles
+logger = logging.getLogger('main')
 
 
-def parse_unian():
-    unian_stub = "stub_unian_rss.xml"
-    with open(unian_stub) as fh:
-        stub = fh.read()
-        parser = UnianRssParser(stub)
-        articles = parser.parse()
-        return articles
+async def shutdown(app: Application) -> None:
+    logger.info('Shutting down application...')
+    await app.shutdown()
+    logger.info('Done shutting down application.')
+    logging.shutdown()
 
 
-def main():
-    articles = []
-    pravda = parse_pravda()
-    unian = parse_unian()
-    articles.extend(pravda)
-    articles.extend(unian)
-    import random
-    random.shuffle(articles)
-    print(articles)
+def make_app() -> Application:
+    config = Config()
+    pravda_feed = RSSFeed("https://www.pravda.com.ua/rus/rss/",
+                          PravdaRssParser)
+    unian_feed = RSSFeed("https://rss.unian.net/site/news_ukr.rss",
+                         UnianRssParser)
+    app = Application(refetch_interval=config.refetch_time,
+                      feeds=[pravda_feed, unian_feed], publisher=None)
+    return app
+
+
+async def main() -> None:
+    loop = asyncio.get_running_loop()
+    setup_logging()
+    app = make_app()
+
+    logger.info('Running app...Refetch interval interval: %s.',
+                app.refetch_interval)
+    for signum in (signal.SIGTERM, signal.SIGINT):
+        loop.add_signal_handler(signum,
+                                lambda: asyncio.ensure_future(shutdown(app)))
+    await app.start()
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

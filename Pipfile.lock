@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2c5c75ab0fc628a232239706591e922fec111ed0bb34cc8c62d3352e2d21a02d"
+            "sha256": "030f939d40679f986136a4d8528a55182ad19a42e90ef405eaddcf172ca87b79"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -33,6 +33,14 @@
             ],
             "index": "pypi",
             "version": "==3.6.2"
+        },
+        "aiormq": {
+            "hashes": [
+                "sha256:106695a836f19c1af6c46b58e8aac80e00f86c5b3287a3c6483a1ee369cc95c9",
+                "sha256:9f6dbf6155fe2b7a3d24bf68de97fb812db0fac0a54e96bc1af14ea95078ba7f"
+            ],
+            "index": "pypi",
+            "version": "==3.2.3"
         },
         "async-timeout": {
             "hashes": [
@@ -87,6 +95,13 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==4.7.6"
+        },
+        "pamqp": {
+            "hashes": [
+                "sha256:2f81b5c186f668a67f165193925b6bfd83db4363a6222f599517f29ecee60b02",
+                "sha256:5cd0f5a85e89f20d5f8e19285a1507788031cfca4a9ea6f067e3cf18f5e294e8"
+            ],
+            "version": "==2.3.0"
         },
         "typing-extensions": {
             "hashes": [
