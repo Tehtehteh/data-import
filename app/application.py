@@ -4,7 +4,7 @@ import aiohttp
 
 from config import Config
 from typing import Optional, List
-from queue_publisher import RMQPublisher
+from queue_publisher import IPublisher
 from parsers import RSSFeed
 
 logger = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ class Application:
 
     def __init__(self, refetch_interval: int,
                  feeds: List[RSSFeed],
-                 publisher: Optional[RMQPublisher],
+                 publisher: Optional[IPublisher],
                  ):
         self.refetch_interval = refetch_interval
         self.publisher = publisher

@@ -4,13 +4,13 @@ import asyncio
 from typing import Optional, List
 from aiormq import connect, Connection
 from parsers.types import Article
+from .interface import IPublisher
 
 
 logger = logging.getLogger(__name__)
-logging.getLogger().setLevel(logging.INFO)
 
 
-class RMQPublisher:
+class RMQPublisher(IPublisher):
     def __init__(self, conn_string: str):
         self.conn_string = conn_string
         self.connection: Optional[Connection] = None
@@ -19,7 +19,6 @@ class RMQPublisher:
         assert self.connection is None
         logger.info("Connecting to %s RMQ instance.", self.conn_string)
         self.connection = await connect(self.conn_string)
-        # self.connection.
 
     @property
     def started(self):
@@ -44,16 +43,3 @@ class RMQPublisher:
     def __del__(self):
         if self.started:
             asyncio.ensure_future(self.connection.close())
-
-
-if __name__ == '__main__':
-    test_rmq_conn_string = "amqp://guest:guest@localhost"
-
-    async def test_publish():
-        publisher = RMQPublisher(test_rmq_conn_string)
-        article = Article("qeq", "qeq", "", "", "", "", source="QWA")
-        await publisher.connect()
-        await publisher.send_article(article, "article")
-
-    asyncio.get_event_loop().run_until_complete(test_publish())
-    asyncio.get_event_loop().run_forever()
