@@ -4,9 +4,10 @@ from parsers import (
     UnianRssParser,
     PravdaRssParser,
     UkraNewsRssParser,
-    LigaRssParser
+    LigaRssParser,
+    RSSFeed
 )
-from typing import List, Tuple
+from typing import List
 
 
 class DataServiceClient:
@@ -18,10 +19,10 @@ class DataServiceClient:
     }
     url = ''
 
-    def __init__(self, debug):
+    def __init__(self, debug: bool = False):
         self.debug = debug
 
-    async def get_sources(self) -> List[Tuple[str, any]]:
+    async def get_sources(self) -> List[RSSFeed]:
         if self.debug:
             response = [
                 {
@@ -50,5 +51,5 @@ class DataServiceClient:
             async with aiohttp.ClientSession() as session:
                 async with session.get(DataServiceClient.url) as request:
                     response = await request.json()
-        response = [(obj['url'], DataServiceClient.parsers[obj['name']]) for obj in response]
+        response = [RSSFeed(obj['url'], DataServiceClient.parsers[obj['name']]) for obj in response]
         return response
