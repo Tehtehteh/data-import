@@ -9,17 +9,22 @@ from typing import List
 
 
 class DataServiceClient:
+    """
+    It is a client for "Data Service",
+    which returns a list of objects with info to connect to different RSS sources.
+    """
 
-    def __init__(self, debug: bool = False):
+    def __init__(self, base_url: str, debug: bool = False):
         self.debug = debug
+        self.base_url = base_url
 
-    async def get_sources(self, url: str) -> List[RSSFeed]:
+    async def get_rss_sources(self, url: str) -> List[RSSFeed]:
         if self.debug:
             with open('tests/stubs/stub_data_client_sources.json') as handle:
                 response = json.load(handle)
         else:
             async with aiohttp.ClientSession() as session:
-                async with session.get(url) as request:
+                async with session.get(self.base_url + url) as request:
                     response = await request.json()
 
         result = list()

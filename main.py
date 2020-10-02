@@ -5,7 +5,6 @@ import logging
 from config import Config
 from app import Application, DataServiceClient
 from logs import setup_logging
-from parsers import RSSFeed
 
 
 logger = logging.getLogger('main')
@@ -20,8 +19,8 @@ async def shutdown(app: Application) -> None:
 
 async def make_app() -> Application:
     config = Config()
-    data_client = DataServiceClient(debug=True)
-    feeds = await data_client.get_sources('')
+    data_client = DataServiceClient(base_url='', debug=True)
+    feeds = await data_client.get_rss_sources('')
     app = Application(refetch_interval=config.refetch_time, feeds=feeds, publisher=None)
     return app
 
