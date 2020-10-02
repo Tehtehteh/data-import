@@ -21,7 +21,7 @@ async def shutdown(app: Application) -> None:
 async def make_app() -> Application:
     config = Config()
     data_client = DataServiceClient(debug=True)
-    feeds = await data_client.get_sources()
+    feeds = await data_client.get_sources('')
     app = Application(refetch_interval=config.refetch_time, feeds=feeds, publisher=None)
     return app
 
