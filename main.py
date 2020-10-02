@@ -18,9 +18,11 @@ async def shutdown(app: Application) -> None:
     logging.shutdown()
 
 
-def make_app() -> Application:
+async def make_app() -> Application:
     config = Config()
-    feeds = [RSSFeed(*feed) for feed in DataServiceClient.get_sources()]
+    data_client = DataServiceClient(debug=1)
+    feeds = await data_client.get_sources()
+    feeds = [RSSFeed(*feed) for feed in feeds]
     app = Application(refetch_interval=config.refetch_time, feeds=feeds, publisher=None)
     return app
 
@@ -28,7 +30,7 @@ def make_app() -> Application:
 async def main() -> None:
     loop = asyncio.get_running_loop()
     setup_logging()
-    app = make_app()
+    app = await make_app()
 
     logger.info('Running app...Refetch interval interval: %s.',
                 app.refetch_interval)
