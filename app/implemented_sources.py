@@ -1,24 +1,38 @@
-import importlib
+import logging
 
-from typing import List, Dict, Union
+from typing import List, Dict
 
-from parsers.rss import BaseRSSParser
+from parsers.rss import (
+    RSSFeed,
+    LigaRssParser,
+    PravdaRssParser,
+    UkraNewsRssParser,
+    UnianRssParser,
+)
 
 
 class ImplementedSources:
+    """
+    maps source`s name to class which implements it`s RSS parser
+    """
+
+    sources = {
+        'liga': LigaRssParser,
+        'pravda': PravdaRssParser,
+        'ukranews': UkraNewsRssParser,
+        'unian': UnianRssParser
+    }
 
     @staticmethod
-    def get_implemented_sources_map(names: List[str]) -> Dict[str, BaseRSSParser]:
-        res = dict()
-        for name in names:
-            res[name] = ImplementedSources.get_source(name)
-        return dict()
-
-    @staticmethod
-    def get_source(name: str) -> Union[BaseRSSParser, None]:
-        try:
-            rss_parser = getattr(importlib.import_module(f"parsers.rss.{name}"), name)
-        except ModuleNotFoundError:
-            return None
-        else:
-            return rss_parser
+    def get_implemented_sources_map(data_client_response: List[Dict[str, any]]) -> List[RSSFeed]:
+        """
+        returns a list of RSSFeed instances for each implemented source in a list
+        """
+        res = []
+        for obj in data_client_response:
+            source = ImplementedSources.sources.get(obj['name'])
+            if source:  # skip all not implemented sources
+                res.append(RSSFeed(obj['url'], source))
+            else:
+                logging.warning(f"Source {obj['name']} does not exist")
+        return res

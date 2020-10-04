@@ -20,7 +20,7 @@ async def shutdown(app: Application) -> None:
 async def make_app() -> Application:
     config = Config()
     data_client = DataServiceClient(base_url='', debug=True)
-    feeds = await data_client.get_rss_sources('')
+    feeds = await data_client.get_rss_sources()
     app = Application(refetch_interval=config.refetch_time, feeds=feeds, publisher=None)
     return app
 
